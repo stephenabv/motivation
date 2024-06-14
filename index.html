@@ -9,6 +9,7 @@
   <body>
     <h2>Remaining days until motivation: <span class="remaining-days"></span> </h2>
   </body>
+  <footer>&copy; <span class="year"></span></footer>
   <script type="text/javascript">
     function getRemainingDays() {
       let now = new Date();
@@ -23,6 +24,10 @@
 
     let test = getRemainingDays();
 
+    let current = new Date();
+    let currentYear = current.getFullYear();
+
     $(".remaining-days").append(test);
+    $(".year").append(currentYear);
   </script>
 </html>
