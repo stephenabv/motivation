@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LIVE TIME</title>
     <link
       rel="stylesheet"
@@ -11,83 +11,147 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js"
       integrity="sha512-ykZ1QQr0Jy/4ZkvKuqWn4iF3lqPZyij9iRv6sGqLRdTPkY69YX6+7wvVGmsdBbiIfN/8OdsI7HABjvEok6ZopQ=="
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+      integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
     <style>
-      .time-container {
-        margin: 40vh auto;
-        height: 250px;
-        width: 250px;
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: Arial, sans-serif;
+      }
+      .container {
+        text-align: center;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .time {
+        font-size: 48px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+      .modal {
+        display: none;
+        text-align: center;
+      }
+      .modal-content {
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .modal-content p {
+        color: red;
+      }
+      .close-btn {
+        margin-top: 10px;
       }
 
-      footer a {
-        text-decoration: none;
-      }
-
-      .circle {
+      .pressMe {
+        height: 50px;
+        width: 50px;
+        margin: auto;
+        background-color: rgb(248, 69, 69);
         border-radius: 50%;
-        background-color: orange;
-        z-index: -1;
-        opacity: 0.8;
+        font-size: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgb(255, 255, 255);
+        border-style: none;
       }
     </style>
   </head>
   <body>
-    <div class="time-container circle">
-      <h1 class="text-center mx-auto mt-50">
-        Current Time <span><div id="clock"></div></span>
-      </h1>
-    </div>
-  </body>
-  <footer class="text-center">
     <div class="container">
-      <a href="https://github.com/stephenabv" target="_blank" rel="noopener"
-        >&copy;</a
-      >
-      All rights reserved.
-      <span class="year"></span>
+      <div id="clock" class="time"></div>
+
+      <button class="pressMe" onclick="clickMe()">Press Me</button>
     </div>
-  </footer>
-  <script type="text/javascript">
-    let current = new Date();
-    let currentYear = current.getFullYear();
 
-    try {
-      $(".year").append(currentYear);
-    } catch (e) {
-      console.log(e);
-    }
+    <div class="modal" id="errorModal">
+      <div class="modal-content">
+        <p class="errorMessage"></p>
+        <button class="btn btn-danger close-btn" onclick="closeModal()">
+          Close
+        </button>
+      </div>
+    </div>
 
-    setInterval(showTime, 1000);
+    <script type="text/javascript">
+      function getTime() {
+        let time = new Date();
+        let hour = time.getHours();
+        let min = time.getMinutes();
+        let sec = time.getSeconds();
+        let am_pm = "AM";
 
-    function showTime() {
-      let time = new Date();
-      let hour = time.getHours();
-      let min = time.getMinutes();
-      let sec = time.getSeconds();
-      let am_pm = "AM";
+        if (hour >= 12) {
+          if (hour > 12) hour -= 12;
+          am_pm = "PM";
+        } else if (hour == 0) {
+          hour = 12;
+        }
 
-      if (hour >= 12) {
-        if (hour > 12) hour -= 12;
-        am_pm = " PM";
-      } else if (hour == 0) {
-        am_pm = " AM";
+        hour = hour < 10 ? "0" + hour : hour;
+        min = min < 10 ? "0" + min : min;
+        sec = sec < 10 ? "0" + sec : sec;
+
+        let currentTime = hour + ":" + min + ":" + sec + " " + am_pm;
+
+        return currentTime;
       }
 
-      hour = hour < 10 ? "0" + hour : hour;
-      min = min < 10 ? "0" + min : min;
-      sec = sec < 10 ? "0" + sec : sec;
+      function clickMe() {
+        $(".time").attr("id", "testID");
+      }
 
-      let currentTime = hour + ":" + min + ":" + sec + am_pm;
+      function showTime() {
+        document.getElementById("clock").innerText = getTime();
+      }
 
-      document.getElementById("clock").innerHTML = currentTime;
-    }
+      function closeModal() {
+        document.getElementById("errorModal").style.display = "none";
+        $(".time").attr("id", "clock");
+      }
 
-    showTime();
-  </script>
+      function checkElement() {
+        return document.getElementById("clock") != null;
+      }
+
+      try {
+        setInterval(() => {
+          let result = checkElement();
+          if (result) {
+            showTime();
+            setInterval(showTime, 1000);
+            document.querySelector(".pressMe").style.display = "";
+          } else {
+            document.querySelector(".pressMe").style.display = "none";
+            document.querySelector(".time").innerText = "";
+            document.querySelector(".errorMessage").innerText = "Error Occured";
+            document.getElementById("errorModal").style.display = "block";
+          }
+        }, 10);
+      } catch (e) {
+        console.error(e);
+      }
+    </script>
+  </body>
 </html>
