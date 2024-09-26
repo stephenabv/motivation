@@ -11,18 +11,6 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js"
-      integrity="sha512-ykZ1QQr0Jy/4ZkvKuqWn4iF3lqPZyij9iRv6sGqLRdTPkY69YX6+7wvVGmsdBbiIfN/8OdsI7HABjvEok6ZopQ=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    ></script>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
-      integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    ></script>
     <style>
       body,
       html {
@@ -33,68 +21,105 @@
         justify-content: center;
         align-items: center;
         font-family: Arial, sans-serif;
+        transition: background 2s ease-in-out;
+        overflow: hidden;
       }
+
       .container {
         text-align: center;
         padding: 20px;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
-      .time {
-        font-size: 75px;
-        font-weight: bold;
-        margin-bottom: 10px;
-      }
-      .modal {
-        display: none;
-        text-align: center;
-      }
-      .modal-content {
-        margin: 15% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
-      .modal-content p {
-        color: red;
-      }
-      .close-btn {
-        margin-top: 10px;
+        z-index: 10;
       }
 
-      .pressMe {
-        height: 50px;
-        width: 50px;
-        margin: auto;
-        background-color: rgb(248, 69, 69);
+      .time {
+        font-size: 5vw;
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+      }
+
+      /* Night background animation */
+      .night {
+        background: linear-gradient(to bottom, #000033 0%, #000000 100%);
+      }
+
+      /* Day background animation */
+      .day {
+        background: linear-gradient(to bottom, #87ceeb 0%, #f7e6a6 100%);
+      }
+
+      /* Responsive design */
+      @media (max-width: 600px) {
+        .time {
+          font-size: 10vw;
+        }
+      }
+
+      /* Stars for night mode */
+      .stars {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 5;
+        background: transparent;
+        animation: twinkle 5s infinite;
+        pointer-events: none;
+      }
+
+      .star {
+        background: white;
+        position: absolute;
         border-radius: 50%;
-        font-size: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: rgb(255, 255, 255);
-        border-style: none;
+        box-shadow: 0 0 10px white;
+      }
+
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0.2;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      /* Sun for day mode */
+      .sun {
+        position: absolute;
+        top: 10%;
+        left: 50%;
+        width: 100px;
+        height: 100px;
+        margin-left: -50px;
+        background: yellow;
+        border-radius: 50%;
+        box-shadow: 0 0 50px yellow;
+        z-index: 6;
+        animation: rise 10s ease-in-out infinite alternate;
+      }
+
+      @keyframes rise {
+        0% {
+          top: 60%;
+        }
+        100% {
+          top: 10%;
+        }
       }
     </style>
   </head>
   <body>
     <div class="container">
       <div id="clock" class="time"></div>
-
-<!--       <button class="pressMe" onclick="clickMe()">Press Me</button> -->
+      <div class="stars" id="stars"></div>
+      <div class="sun" id="sun"></div>
     </div>
 
-    <div class="modal" id="errorModal">
-      <div class="modal-content">
-        <p class="errorMessage"></p>
-        <button class="btn btn-danger close-btn" onclick="closeModal()">
-          Close
-        </button>
-      </div>
-    </div>
-
-    <script type="text/javascript">
+    <script>
       function getTime() {
         let time = new Date();
         let hour = time.getHours();
@@ -115,43 +140,51 @@
 
         let currentTime = hour + ":" + min + ":" + sec + " " + am_pm;
 
-        return currentTime;
-      }
+        let bodyElement = document.body;
+        let starsElement = document.getElementById("stars");
+        let sunElement = document.getElementById("sun");
+        let clockElement = document.getElementById("clock");
 
-      function clickMe() {
-        $(".time").attr("id", "testID");
+        if (am_pm === "PM") {
+          bodyElement.classList.add("night");
+          starsElement.style.display = "block";
+          sunElement.style.display = "none";
+          clockElement.style.color = "white";
+        } else {
+          bodyElement.classList.remove("night");
+          starsElement.style.display = "none";
+          sunElement.style.display = "block";
+        }
+
+        return currentTime;
       }
 
       function showTime() {
         document.getElementById("clock").innerText = getTime();
       }
 
-      function closeModal() {
-        document.getElementById("errorModal").style.display = "none";
-        $(".time").attr("id", "clock");
+      setInterval(showTime, 1000);
+
+      function addStars(numStars = 1000) {
+        const starsElement = document.getElementById("stars");
+        for (let i = 0; i < numStars; i++) {
+          const star = document.createElement("div");
+          star.classList.add("star");
+
+          // Randomize star size
+          const size = Math.random() * 3 + 1; // Size range: 1px to 4px
+          star.style.width = `${size}px`;
+          star.style.height = `${size}px`;
+
+          const topPosition = Math.random() * 100;
+          const leftPosition = Math.random() * 100;
+          star.style.top = `${topPosition}%`;
+          star.style.left = `${leftPosition}%`;
+          starsElement.appendChild(star);
+        }
       }
 
-      function checkElement() {
-        return document.getElementById("clock") != null;
-      }
-
-      try {
-        setInterval(() => {
-          let result = checkElement();
-          if (result) {
-            showTime();
-            setInterval(showTime, 1000);
-            document.querySelector(".pressMe").style.display = "";
-          } else {
-            document.querySelector(".pressMe").style.display = "none";
-            document.querySelector(".time").innerText = "";
-            document.querySelector(".errorMessage").innerText = "Error Occured";
-            document.getElementById("errorModal").style.display = "block";
-          }
-        }, 10);
-      } catch (e) {
-        console.error(e);
-      }
+      addStars();
     </script>
   </body>
 </html>
